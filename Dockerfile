@@ -52,17 +52,12 @@ EXPOSE 9000
 COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Set environment variables from Render
-ENV APP_ENV=${APP_ENV} \
+ENV APP_NAME=${APP_NAME} \
     APP_DEBUG=${APP_DEBUG} \
     APP_KEY=${APP_KEY} \
-    DB_CONNECTION=${DB_CONNECTION} \
-    DB_HOST=${DB_HOST} \
-    DB_PORT=${DB_PORT} \
     DB_DATABASE=${DB_DATABASE} \
     DB_USERNAME=${DB_USERNAME} \
-    DB_PASSWORD=${DB_PASSWORD} \
-    REDIS_HOST=${REDIS_HOST} \
-    REDIS_PORT=${REDIS_PORT}
+    DB_PASSWORD=${DB_PASSWORD} 
 
 # Start Supervisor
 CMD ["/usr/bin/supervisord"]
