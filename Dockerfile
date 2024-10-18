@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
     libonig-dev \
-    supervisor \
     libmagickwand-dev \
     && docker-php-ext-configure gd \
     --with-freetype \
@@ -33,10 +32,6 @@ RUN pecl install imagick \
 
 # Install Composer
 COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
-
-# Install application dependencies
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
 
 # Copy the application source code
 COPY . .
