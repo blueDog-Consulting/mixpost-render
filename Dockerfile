@@ -37,8 +37,7 @@ COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
 COPY . .
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage
+RUN chmod -R 755 /var/www/html/storage
 
 # Expose port 9000 for php-fpm
 EXPOSE 9000
@@ -49,7 +48,7 @@ ENV APP_NAME=${APP_NAME} \
     APP_KEY=${APP_KEY} \
     DB_DATABASE=${DB_DATABASE} \
     DB_USERNAME=${DB_USERNAME} \
-    DB_PASSWORD=${DB_PASSWORD} 
+    DB_PASSWORD=${DB_PASSWORD}
 
 # Start php-fpm server
 CMD ["php-fpm"]
