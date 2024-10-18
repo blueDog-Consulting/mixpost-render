@@ -1,0 +1,68 @@
+# Start with a base image that has PHP and Composer installed
+FROM php:8.1-fpm
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    unzip \
+    libpq-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    zip \
+    libonig-dev \
+    supervisor \
+    libmagickwand-dev \
+    && docker-php-ext-configure gd \
+    --with-freetype \
+    --with-jpeg \
+    && docker-php-ext-install gd zip pdo pdo_mysql pdo_pgsql opcache
+
+# Install and enable Redis extension
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
+# Install ImageMagick
+RUN pecl install imagick \
+    && docker-php-ext-enable imagick
+
+# Install Composer
+COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
+
+# Install application dependencies
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader
+
+# Copy the application source code
+COPY . .
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage
+
+# Expose port 9000 for php-fpm
+EXPOSE 9000
+
+# Copy Supervisor configuration
+COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Set environment variables from Render
+ENV APP_ENV=${APP_ENV} \
+    APP_DEBUG=${APP_DEBUG} \
+    APP_KEY=${APP_KEY} \
+    DB_CONNECTION=${DB_CONNECTION} \
+    DB_HOST=${DB_HOST} \
+    DB_PORT=${DB_PORT} \
+    DB_DATABASE=${DB_DATABASE} \
+    DB_USERNAME=${DB_USERNAME} \
+    DB_PASSWORD=${DB_PASSWORD} \
+    REDIS_HOST=${REDIS_HOST} \
+    REDIS_PORT=${REDIS_PORT}
+
+# Start Supervisor
+CMD ["/usr/bin/supervisord"]
