@@ -48,9 +48,6 @@ RUN chown -R www-data:www-data /var/www/html \
 # Expose port 9000 for php-fpm
 EXPOSE 9000
 
-# Copy Supervisor configuration
-COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
 # Set environment variables from Render
 ENV APP_NAME=${APP_NAME} \
     APP_DEBUG=${APP_DEBUG} \
@@ -59,5 +56,5 @@ ENV APP_NAME=${APP_NAME} \
     DB_USERNAME=${DB_USERNAME} \
     DB_PASSWORD=${DB_PASSWORD} 
 
-# Start Supervisor
-CMD ["/usr/bin/supervisord"]
+# Start php-fpm server
+CMD ["php-fpm"]
